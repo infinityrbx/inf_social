@@ -20,12 +20,12 @@ const userSchema = new mongoose.Schema(
       max: 50,
       unique: true,
     },
-    email: {
+    password: {
       type: String,
       required: true,
       min: 8,
     },
-    email: {
+    picturePath: {
       type: String,
       default: "",
     },
