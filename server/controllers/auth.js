@@ -56,7 +56,9 @@ export const login = async (req, res) => {
 
     const token = jwt.sign({ id: User._id }, process.env.JWT_SECRET);
     delete User.password;
-    res.status(200).send({ message: "success", token: token });
+    res
+      .status(200)
+      .send({ message: "success", user_id: User._id, token: token });
   } catch (err) {
     console.log(err);
     res.status(500).send({ error: err.message });
