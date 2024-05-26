@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import user from "../models/User.js";
+import User from "../models/User.js";
 /* REGISTER USER */
 export const register = async (req, res) => {
   try {
@@ -41,24 +41,22 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const User = await user.findOne({ email: email });
-    console.log(User);
-    if (!User)
+    const user = await User.findOne({ email: email });
+    console.log(user);
+    if (!user)
       return res
         .status(400)
         .json({ msg: "User name or Password isn't correct. " });
 
-    const isMatch = await bcrypt.compare(password, User.password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res
         .status(400)
         .json({ msg: "User name or Password isn't correct." });
 
-    const token = jwt.sign({ id: User._id }, process.env.JWT_SECRET);
-    delete User.password;
-    res
-      .status(200)
-      .send({ message: "success", user_id: User._id, token: token });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    delete user.password;
+    res.status(200).send({ token, user });
   } catch (err) {
     console.log(err);
     res.status(500).send({ error: err.message });
