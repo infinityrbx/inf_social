@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Post from "../models/Posts.js";
 import User from "../models/User.js";
 
@@ -49,9 +50,22 @@ export const getUserPosts = async (req, res) => {
 /* UPDATE */
 export const likePost = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { userId } = req.body;
-    const post = await Post.findById({ id });
+    const postId = req.params.id; // Get the raw ID from params
+    const userId = req.user.id; // Assuming you have authentication middleware
+
+    // Convert postId to a proper ObjectId
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: "Invalid post ID" });
+    }
+
+    const postObjectId = new mongoose.Types.ObjectId(postId);
+
+    const post = await Post.findById(postObjectId);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
     const isLiked = post.likes.get(userId);
 
     if (isLiked) {
@@ -61,13 +75,13 @@ export const likePost = async (req, res) => {
     }
 
     const updatedPost = await Post.findByIdAndUpdate(
-      id,
+      postObjectId,
       { likes: post.likes },
       { new: true }
     );
 
-    res.status(200).json();
+    res.status(200).json(updatedPost); // Return the updated post
   } catch (err) {
-    res.status(404).json({ message: err.message });
+    res.status(500).json({ message: err.message }); // Use 500 for server errors
   }
 };
