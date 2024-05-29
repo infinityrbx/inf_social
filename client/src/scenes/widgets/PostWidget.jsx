@@ -27,7 +27,7 @@ const PostWidget = ({
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user._id);
-  const isLiked = likes ? Boolean(likes[loggedInUserId]) : false; // Check if likes exists
+  const isLiked = likes ? Boolean(likes[loggedInUserId]) : false;
   const likeCount = likes ? Object.keys(likes).length : 0;
 
   const { palette } = useTheme();
@@ -35,16 +35,28 @@ const PostWidget = ({
   const main = palette.neutral.main;
 
   const patchLike = async () => {
-    const response = await fetch(`http://localhost:3005/posts/${postId}/like`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userId: loggedInUserId }),
-    });
-    const updatedPost = await response.json();
-    dispatch(setPost({ post: updatedPost }));
+    try {
+      const response = await fetch(
+        `http://localhost:3005/posts/${postId}/like`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: loggedInUserId }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update like");
+      }
+
+      const updatedPost = await response.json();
+      dispatch(setPost({ post: updatedPost }));
+    } catch (err) {
+      console.error("Error updating like:", err);
+    }
   };
 
   return (

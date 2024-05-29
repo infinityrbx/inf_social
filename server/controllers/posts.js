@@ -50,10 +50,9 @@ export const getUserPosts = async (req, res) => {
 /* UPDATE */
 export const likePost = async (req, res) => {
   try {
-    const postId = req.params.id; // Get the raw ID from params
-    const userId = req.user.id; // Assuming you have authentication middleware
+    const postId = req.params.id;
+    const userId = req.body.userId; // Get userId from the request body
 
-    // Convert postId to a proper ObjectId
     if (!mongoose.Types.ObjectId.isValid(postId)) {
       return res.status(400).json({ message: "Invalid post ID" });
     }
@@ -84,8 +83,8 @@ export const likePost = async (req, res) => {
       { new: true }
     );
 
-    res.status(200).json(updatedPost); // Return the updated post
+    res.status(200).json(updatedPost);
   } catch (err) {
-    res.status(500).json({ message: err.message }); // Use 500 for server errors
+    res.status(500).json({ message: err.message });
   }
 };
