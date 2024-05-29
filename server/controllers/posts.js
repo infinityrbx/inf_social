@@ -66,6 +66,10 @@ export const likePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
+    if (!post.likes || !(post.likes instanceof Map)) {
+      return res.status(500).json({ message: "Invalid likes data in post" });
+    }
+
     const isLiked = post.likes.get(userId);
 
     if (isLiked) {

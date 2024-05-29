@@ -15,6 +15,8 @@ import { useDispatch } from "react-redux";
 import { setLogin } from "states";
 import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const registerSchema = yup.object().shape({
   firstName: yup.string().required("required"),
@@ -79,21 +81,31 @@ const Form = () => {
   };
 
   const login = async (values, onSubmitProps) => {
-    const loggedInResponse = await fetch("http://localhost:3005/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-    const loggedIn = await loggedInResponse.json();
-    onSubmitProps.resetForm();
-    if (loggedIn) {
-      dispatch(
-        setLogin({
-          user: loggedIn.user,
-          token: loggedIn.token,
-        })
-      );
-      navigate("/home");
+    try {
+      const loggedInResponse = await fetch("http://localhost:3005/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      const loggedIn = await loggedInResponse.json();
+
+      if (loggedInResponse.ok) {
+        // Check if response is successful (status 200-299)
+        dispatch(
+          setLogin({
+            user: loggedIn.user,
+            token: loggedIn.token,
+          })
+        );
+        navigate("/home");
+      } else {
+        toast.error(loggedIn.message || "Login failed"); // Show error toast
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("An error occurred during login"); // Generic error toast
+    } finally {
+      onSubmitProps.resetForm();
     }
   };
 
