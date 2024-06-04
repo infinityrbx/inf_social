@@ -1,5 +1,18 @@
 import mongoose from "mongoose";
 
+const commentSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: String,
+      required: true,
+    },
+    comment: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
 const postSchema = mongoose.Schema(
   {
     userId: {
@@ -23,10 +36,7 @@ const postSchema = mongoose.Schema(
       of: Boolean,
       default: () => new Map(),
     },
-    comments: {
-      type: Array,
-      default: [],
-    },
+    comments: [commentSchema],
   },
   { timestamps: true }
 );
