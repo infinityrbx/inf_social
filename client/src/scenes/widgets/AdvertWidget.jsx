@@ -1,4 +1,4 @@
-import { Typography, useTheme } from "@mui/material";
+import { Typography, useTheme, Link } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import WidgetWrapper from "components/WidgetWrapper";
 
@@ -14,7 +14,13 @@ const AdvertWidget = () => {
         <Typography color={dark} variant="h5" fontWeight="500">
           Sponsored
         </Typography>
-        <Typography color={medium}>Create Ad</Typography>
+        <Link
+          href="https://mail.google.com/mail/u/0/?fs=1&to=lattana.rb@gmail.com&tf=cm"
+          color={medium}
+          underline="hover"
+        >
+          <Typography>Create Ad</Typography>
+        </Link>
       </FlexBetween>
       <img
         width="100%"
