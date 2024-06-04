@@ -11,8 +11,7 @@ const HomePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const user = useSelector((state) => state.user);
   const _id = user?._id || null;
-  const picturePath =
-    user?.picturePath ?? "http://localhost:3005/assets/def_avatar.jpg";
+  const picturePath = user.picturePath;
 
   return (
     <Box>
