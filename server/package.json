@@ -21,7 +21,8 @@
   "type": "module",
   "scripts": {
     "test": "mocha",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "build": "npm install --prefix ./client && npm run build --prefix ./client && npm install"
   },
   "keywords": [],
   "author": "",

@@ -29,6 +29,14 @@ app.use(bodyParser.urlencoded({ limit: "30mb", extented: "true" }));
 app.use(cors());
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
+//USE CLIENT
+app.use(express.static(path.join(__dirname, "/client/build")));
+
+//RENDER CLIENT
+app.get("*", (req, res) =>
+  res.sendFile(path.join(__dirname, "/client/build/index.html"))
+);
+
 // FILE STORAGE
 
 const storage = multer.diskStorage({
