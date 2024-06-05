@@ -4,11 +4,18 @@ import {
   FavoriteOutlined,
   ShareOutlined,
 } from "@mui/icons-material";
-import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Divider,
+  IconButton,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost } from "states";
 
@@ -59,6 +66,41 @@ const PostWidget = ({
     }
   };
 
+  const [commentAuthors, setCommentAuthors] = useState({});
+
+  useEffect(() => {
+    // Function to fetch author details for a given userId
+    const fetchAuthor = async (userId) => {
+      try {
+        const response = await fetch(`http://localhost:3005/users/${userId}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error("Error fetching author details:", error);
+        return null;
+      }
+    };
+
+    const uniqueUserIds = [
+      ...new Set(comments.map((comment) => comment.userId)),
+    ];
+    Promise.all(uniqueUserIds.map(fetchAuthor)).then((authors) => {
+      const authorLookup = {};
+      authors.forEach((author) => {
+        if (author) {
+          authorLookup[author._id] = author;
+        }
+      });
+      setCommentAuthors(authorLookup);
+    });
+  }, [comments]); //eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <WidgetWrapper m="2rem 0">
       <Friend
@@ -104,15 +146,35 @@ const PostWidget = ({
       </FlexBetween>
       {isComments && (
         <Box mt="0.5rem">
-          {comments.map((comment, i) => (
-            <Box key={`${name}-${i}`}>
-              <Divider />
-              <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
-                {comment}
-              </Typography>
-            </Box>
-          ))}
-          <Divider />
+          {comments.map((comment) => {
+            const author = commentAuthors[comment.userId];
+            const key = `${comment._id.$oid}-${Math.random()}`;
+            return (
+              <Box key={key}>
+                {" "}
+                {/* Box now wraps each comment and divider */}
+                <Box display="flex" alignItems="flex-start" gap="1rem">
+                  {author && (
+                    <Avatar
+                      src={`http://localhost:3005/assets/${author.picturePath}`}
+                      sx={{ width: 25, height: 25 }}
+                    />
+                  )}
+                  <Box>
+                    <Typography sx={{ color: main, fontWeight: "bold" }}>
+                      {author
+                        ? `${author.firstName} ${author.lastName}`
+                        : "Unknown Author"}
+                    </Typography>
+                    <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
+                      {comment.comment}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Divider sx={{ margin: "0.5rem 0" }} />{" "}
+              </Box>
+            );
+          })}
         </Box>
       )}
     </WidgetWrapper>
