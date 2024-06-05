@@ -47,7 +47,7 @@ const PostWidget = ({
   const handlePostComment = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3005/posts/${postId}/comment`,
+        `https://inf-social.onrender.com/posts/${postId}/comment`,
         {
           method: "POST",
           headers: {
@@ -74,7 +74,7 @@ const PostWidget = ({
   const patchLike = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3005/posts/${postId}/like`,
+        `https://inf-social.onrender.com/posts/${postId}/like`,
         {
           method: "PATCH",
           headers: {
@@ -101,13 +101,16 @@ const PostWidget = ({
   useEffect(() => {
     const fetchAuthor = async (userId) => {
       try {
-        const response = await fetch(`http://localhost:3005/users/${userId}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          `https://inf-social.onrender.com/users/${userId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
         const data = await response.json();
         return data;
       } catch (error) {
@@ -147,7 +150,7 @@ const PostWidget = ({
           height="auto"
           alt="post"
           style={{ borderRadius: "0.75rem" }}
-          src={`http://localhost:3005/assets/${picturePath}`}
+          src={`https://inf-social.onrender.com/assets/${picturePath}`}
         />
       )}
       <FlexBetween mt="0.25rem">
@@ -184,7 +187,7 @@ const PostWidget = ({
                 <Box display="flex" alignItems="flex-start" gap="1rem">
                   {author && (
                     <Avatar
-                      src={`http://localhost:3005/assets/${author.picturePath}`}
+                      src={`https://inf-social.onrender.com/assets/${author.picturePath}`}
                       sx={{ width: 50, height: 50 }}
                     />
                   )}

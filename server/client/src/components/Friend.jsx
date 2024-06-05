@@ -23,7 +23,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
 
   const patchFriend = async () => {
     const response = await fetch(
-      `http://localhost:3005/users/${_id}/${friendId}`,
+      `https://inf-social.onrender.com/users/${_id}/${friendId}`,
       { method: "PATCH", headers: { Authorization: `Bearer ${token}` } }
     );
     const data = await response.json();
