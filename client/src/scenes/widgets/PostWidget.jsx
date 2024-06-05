@@ -4,11 +4,20 @@ import {
   FavoriteOutlined,
   ShareOutlined,
 } from "@mui/icons-material";
-import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Divider,
+  IconButton,
+  Typography,
+  useTheme,
+  TextField,
+  Button,
+} from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost } from "states";
 
@@ -29,10 +38,38 @@ const PostWidget = ({
   const loggedInUserId = useSelector((state) => state.user._id);
   const isLiked = likes ? Boolean(likes[loggedInUserId]) : false;
   const likeCount = likes ? Object.keys(likes).length : 0;
+  const [newComment, setNewComment] = useState("");
 
   const { palette } = useTheme();
   const primary = palette.primary.main;
   const main = palette.neutral.main;
+
+  const handlePostComment = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3005/posts/${postId}/comment`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: loggedInUserId,
+            comment: newComment,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to post comment");
+      }
+      const updatedPost = await response.json();
+      dispatch(setPost({ post: updatedPost }));
+      setNewComment("");
+    } catch (error) {
+      console.error("Error posting comment:", error);
+    }
+  };
 
   const patchLike = async () => {
     try {
@@ -58,6 +95,40 @@ const PostWidget = ({
       console.error("Error updating like:", err);
     }
   };
+
+  const [commentAuthors, setCommentAuthors] = useState({});
+
+  useEffect(() => {
+    const fetchAuthor = async (userId) => {
+      try {
+        const response = await fetch(`http://localhost:3005/users/${userId}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error("Error fetching author details:", error);
+        return null;
+      }
+    };
+
+    const uniqueUserIds = [
+      ...new Set(comments.map((comment) => comment.userId)),
+    ];
+    Promise.all(uniqueUserIds.map(fetchAuthor)).then((authors) => {
+      const authorLookup = {};
+      authors.forEach((author) => {
+        if (author) {
+          authorLookup[author._id] = author;
+        }
+      });
+      setCommentAuthors(authorLookup);
+    });
+  }, [comments]); //eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <WidgetWrapper m="2rem 0">
@@ -104,15 +175,53 @@ const PostWidget = ({
       </FlexBetween>
       {isComments && (
         <Box mt="0.5rem">
-          {comments.map((comment, i) => (
-            <Box key={`${name}-${i}`}>
-              <Divider />
-              <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
-                {comment}
-              </Typography>
-            </Box>
-          ))}
-          <Divider />
+          {comments.map((comment) => {
+            const author = commentAuthors[comment.userId];
+            const key = `${comment._id.$oid}-${Math.random()}`;
+            return (
+              <Box key={key}>
+                {" "}
+                <Box display="flex" alignItems="flex-start" gap="1rem">
+                  {author && (
+                    <Avatar
+                      src={`http://localhost:3005/assets/${author.picturePath}`}
+                      sx={{ width: 50, height: 50 }}
+                    />
+                  )}
+                  <Box>
+                    <Typography sx={{ color: main, fontWeight: "bold" }}>
+                      {author
+                        ? `${author.firstName} ${author.lastName}`
+                        : "Unknown Author"}
+                    </Typography>
+                    <Typography sx={{ color: main, m: "0.5rem 0" }}>
+                      {comment.comment}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Divider sx={{ margin: "0.5rem 0" }} />{" "}
+              </Box>
+            );
+          })}
+          <FlexBetween gap="1rem">
+            <TextField
+              label="Add a comment..."
+              variant="outlined"
+              size="small"
+              fullWidth
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={handlePostComment}
+              disabled={newComment.trim() === ""} // Disable if comment is empty
+            >
+              Post
+            </Button>
+          </FlexBetween>
         </Box>
       )}
     </WidgetWrapper>

@@ -17,7 +17,7 @@ router.get("/:userId", verifyToken, getUserPosts);
 
 /* UPDATE */
 router.patch("/:id/like", verifyToken, likePost);
-router.patch("/:id/comment", verifyToken, createCommentPost);
+router.post("/:id/comment", verifyToken, createCommentPost);
 router.delete("/:id/comment/:commentId", verifyToken, deleteCommentPost);
 
 export default router;
