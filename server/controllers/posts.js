@@ -116,8 +116,39 @@ export const createCommentPost = async (req, res) => {
       { new: true }
     );
 
-    res.status(200).json(updatedPost);
+    res.status(201).json(updatedPost);
   } catch (error) {
     res.status(404).json({ message: error.message });
+  }
+};
+
+export const deleteCommentPost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const commentId = req.params.commentId;
+    const userId = req.body.userId;
+
+    if (
+      !mongoose.Types.ObjectId.isValid(postId) ||
+      !mongoose.Types.ObjectId.isValid(commentId)
+    ) {
+      return res.status(400).json({ message: "Invalid post or comment ID" });
+    }
+
+    const updatedPost = await Post.findOneAndUpdate(
+      { _id: postId },
+      { $pull: { comments: { _id: commentId, userId } } },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedPost) {
+      return res.status(404).json({
+        message: "Post or comment not found, or you are not authorized",
+      });
+    }
+
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
