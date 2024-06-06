@@ -13,7 +13,6 @@ export const getUser = async (req, res) => {
 
 export const getAllUser = async (req, res) => {
   try {
-    const { id } = req.params;
     const user = await User.find();
     res.status(200).json(user);
   } catch (err) {
@@ -41,6 +40,27 @@ export const getUserFriends = async (req, res) => {
 };
 
 /* UPDATE */
+
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // USER AUTH (Work later)
+    // const userId = req.header._id;
+    // // if (id !== userId) {
+    // //   res.status(400).json({ message: "You are not authorized" });
+    // // }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $set: req.body },
+      { new: true }
+    );
+    res.status(201).json(updatedUser);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
 
 export const addRemoveFriend = async (req, res) => {
   try {

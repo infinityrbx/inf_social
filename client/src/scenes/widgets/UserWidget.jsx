@@ -1,19 +1,27 @@
 import {
   ManageAccountsOutlined,
-  EditOutlined,
   LocationOnOutlined,
   WorkOutlineOutlined,
 } from "@mui/icons-material";
-import { Box, Typography, Divider, useTheme } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Divider,
+  useTheme,
+  Dialog,
+  DialogContent,
+} from "@mui/material";
 import UserImage from "components/UserImage";
 import FlexBetween from "components/FlexBetween";
 import WidgetWrapper from "components/WidgetWrapper";
+import UserDetailEditForm from "components/UserDetailEditForm";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const UserWidget = ({ userId, picturePath }) => {
   const [user, setUser] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
   const { palette } = useTheme();
   const navigate = useNavigate();
   const token = useSelector((state) => state.token);
@@ -46,15 +54,21 @@ const UserWidget = ({ userId, picturePath }) => {
     impressions,
     friends,
   } = user;
+  // State for dialog
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    getUser();
+  };
 
   return (
     <WidgetWrapper>
       {/* 1st ROW */}
-      <FlexBetween
-        gap="0.5rem"
-        pb="1.1rem"
-        onClick={() => navigate(`/profile/${userId}`)}
-      >
+      <FlexBetween gap="0.5rem" pb="1.1rem">
         <FlexBetween gap="1rem">
           <UserImage image={picturePath} />
           <Box>
@@ -62,6 +76,7 @@ const UserWidget = ({ userId, picturePath }) => {
               variant="h4"
               color={dark}
               fontWeight="500"
+              onClick={() => navigate(`/profile/${userId}`)}
               sx={{
                 "&:hover": {
                   color: palette.primary.light,
@@ -74,7 +89,10 @@ const UserWidget = ({ userId, picturePath }) => {
             <Typography color={medium}>{friends.length} friends</Typography>
           </Box>
         </FlexBetween>
-        <ManageAccountsOutlined />
+        <ManageAccountsOutlined
+          sx={{ color: main, cursor: "pointer" }}
+          onClick={handleOpenDialog}
+        />
       </FlexBetween>
 
       <Divider />
@@ -122,7 +140,6 @@ const UserWidget = ({ userId, picturePath }) => {
               <Typography color={medium}>Social Network</Typography>
             </Box>
           </FlexBetween>
-          <EditOutlined sx={{ color: main }} />
         </FlexBetween>
 
         <FlexBetween gap="1rem">
@@ -138,9 +155,14 @@ const UserWidget = ({ userId, picturePath }) => {
               <Typography color={medium}>Network Platform</Typography>
             </Box>
           </FlexBetween>
-          <EditOutlined sx={{ color: main }} />
         </FlexBetween>
       </Box>
+
+      <Dialog open={openDialog}>
+        <DialogContent>
+          <UserDetailEditForm userId={userId} onClose={handleCloseDialog} />
+        </DialogContent>
+      </Dialog>
     </WidgetWrapper>
   );
 };
