@@ -24,8 +24,8 @@ const UserDetailEditForm = ({ userId, onClose }) => {
 
         const data = await response.json();
         setFormData(data);
-      } catch (error) {
-        setError(error.message);
+      } catch (err) {
+        setError(err.message);
       }
     };
 
@@ -51,8 +51,8 @@ const UserDetailEditForm = ({ userId, onClose }) => {
         throw new Error("Failed to update user data");
       }
       onClose();
-    } catch (error) {
-      setError(error.message);
+    } catch (err) {
+      setError(err.message);
     }
   };
 
