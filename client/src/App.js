@@ -7,12 +7,11 @@ import { useSelector } from "react-redux";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material";
 import { themeSettings } from "theme";
-import { boolean } from "yup";
 
 function App() {
   const mode = useSelector((state) => state.mode);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
-  const isAuth = boolean(useSelector((state) => state.token));
+  const isAuth = Boolean(useSelector((state) => state.token));
 
   return (
     <div className="app">
