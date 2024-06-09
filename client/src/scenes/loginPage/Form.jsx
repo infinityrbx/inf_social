@@ -86,6 +86,11 @@ const Form = () => {
     }
   };
 
+  const FormError = ({ touched, error }) => {
+    if (!touched || !error) return null;
+    return <Typography color="error">{error}</Typography>;
+  };
+
   const login = async (values, onSubmitProps) => {
     try {
       const loggedInResponse = await fetch("http://localhost:3005/auth/login", {
@@ -156,8 +161,11 @@ const Form = () => {
                   error={
                     Boolean(touched.firstName) && Boolean(errors.firstName)
                   }
-                  helperText={touched.firstName && errors.firstName}
                   sx={{ gridColumn: "span 2" }}
+                />
+                <FormError
+                  touched={touched.firstName}
+                  error={errors.firstName}
                 />
                 <TextField
                   label="Last Name"
@@ -166,9 +174,9 @@ const Form = () => {
                   value={values.lastName}
                   name="lastName"
                   error={Boolean(touched.lastName) && Boolean(errors.lastName)}
-                  helperText={touched.lastName && errors.lastName}
                   sx={{ gridColumn: "span 2" }}
                 />
+                <FormError touched={touched.lastName} error={errors.lastName} />
                 <TextField
                   label="Location"
                   onBlur={handleBlur}
@@ -176,9 +184,9 @@ const Form = () => {
                   value={values.location}
                   name="location"
                   error={Boolean(touched.location) && Boolean(errors.location)}
-                  helperText={touched.location && errors.location}
                   sx={{ gridColumn: "span 4" }}
                 />
+                <FormError touched={touched.location} error={errors.location} />
                 <TextField
                   label="Occupation"
                   onBlur={handleBlur}
@@ -188,8 +196,11 @@ const Form = () => {
                   error={
                     Boolean(touched.occupation) && Boolean(errors.occupation)
                   }
-                  helperText={touched.occupation && errors.occupation}
                   sx={{ gridColumn: "span 4" }}
+                />
+                <FormError
+                  touched={touched.occupation}
+                  error={errors.occupation}
                 />
                 <Box
                   gridColumn="span 4"
