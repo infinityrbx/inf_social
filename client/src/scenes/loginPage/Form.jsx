@@ -15,7 +15,6 @@ import { useDispatch } from "react-redux";
 import { setLogin } from "states";
 import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const registerSchema = yup.object().shape({
@@ -40,7 +39,7 @@ const initialValuesRegister = {
   password: "",
   location: "",
   occupation: "",
-  picture: null,
+  picture: "",
 };
 
 const initialValuesLogin = {
@@ -50,6 +49,7 @@ const initialValuesLogin = {
 
 const Form = () => {
   const [pageType, setPageType] = useState("login");
+  const [formError, setFormError] = useState(null);
   const { palette } = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -58,37 +58,44 @@ const Form = () => {
   const isRegister = pageType === "register";
 
   const register = async (values, onSubmitProps) => {
-    // Form data with image
-    const formData = new FormData();
-    for (let value in values) {
-      if (value === "picture" && values.picture) {
-        formData.append(value, values.picture);
+    try {
+      const formData = new FormData();
+      for (let value in values) {
+        if (value === "picture" && values.picture) {
+          formData.append(value, values.picture);
+        } else {
+          formData.append(value, values[value]);
+        }
+      }
+      if (values.picture) {
+        formData.append(`picturePath`, values.picture.name);
+      }
+
+      const savedUserResponse = await fetch(
+        "http://localhost:3005/auth/register",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const savedUser = await savedUserResponse.json();
+
+      if (!savedUserResponse.ok) {
+        const errorMessage = savedUser.error;
+        if (errorMessage.includes("E11000")) {
+          setFormError("Email address is already registered.");
+        } else {
+          setFormError(errorMessage || "Registration failed");
+        }
       } else {
-        formData.append(value, values[value]);
+        login(values, onSubmitProps);
       }
+    } catch (err) {
+      console.error("Registration error:", err);
+      setFormError("An error occurred during registration");
+      onSubmitProps.setSubmitting(false);
     }
-    if (values.picture) {
-      formData.append(`picturePath`, values.picture.name);
-    }
-
-    const savedUserRespone = await fetch(
-      "http://localhost:3005/auth/register",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-    const savedUser = await savedUserRespone.json();
-    onSubmitProps.resetForm();
-
-    if (savedUser) {
-      setPageType("login");
-    }
-  };
-
-  const FormError = ({ touched, error }) => {
-    if (!touched || !error) return null;
-    return <Typography color="error">{error}</Typography>;
   };
 
   const login = async (values, onSubmitProps) => {
@@ -101,7 +108,6 @@ const Form = () => {
       const loggedIn = await loggedInResponse.json();
 
       if (loggedInResponse.ok) {
-        // Check if response is successful (status 200-299)
         dispatch(
           setLogin({
             user: loggedIn.user,
@@ -110,17 +116,20 @@ const Form = () => {
         );
         navigate("/home");
       } else {
-        toast.error(loggedIn.message || "Login failed"); // Show error toast
+        setFormError(loggedIn.msg);
       }
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("An error occurred during login"); // Generic error toast
+      setFormError("An error occurred during login");
     } finally {
+      onSubmitProps.setSubmitting(false);
       onSubmitProps.resetForm();
     }
   };
 
   const handleFormSubmit = async (values, onSubmitProps) => {
+    setFormError(null);
+
     if (isLogin) await login(values, onSubmitProps);
     if (isRegister) await register(values, onSubmitProps);
   };
@@ -142,6 +151,11 @@ const Form = () => {
         resetForm,
       }) => (
         <form onSubmit={handleSubmit}>
+          {formError && (
+            <Box mb="30px">
+              <Typography color="error">{formError}</Typography>
+            </Box>
+          )}
           <Box
             display="grid"
             gap="30px"
@@ -163,10 +177,7 @@ const Form = () => {
                   }
                   sx={{ gridColumn: "span 2" }}
                 />
-                <FormError
-                  touched={touched.firstName}
-                  error={errors.firstName}
-                />
+
                 <TextField
                   label="Last Name"
                   onBlur={handleBlur}
@@ -176,7 +187,6 @@ const Form = () => {
                   error={Boolean(touched.lastName) && Boolean(errors.lastName)}
                   sx={{ gridColumn: "span 2" }}
                 />
-                <FormError touched={touched.lastName} error={errors.lastName} />
                 <TextField
                   label="Location"
                   onBlur={handleBlur}
@@ -186,7 +196,6 @@ const Form = () => {
                   error={Boolean(touched.location) && Boolean(errors.location)}
                   sx={{ gridColumn: "span 4" }}
                 />
-                <FormError touched={touched.location} error={errors.location} />
                 <TextField
                   label="Occupation"
                   onBlur={handleBlur}
@@ -197,10 +206,6 @@ const Form = () => {
                     Boolean(touched.occupation) && Boolean(errors.occupation)
                   }
                   sx={{ gridColumn: "span 4" }}
-                />
-                <FormError
-                  touched={touched.occupation}
-                  error={errors.occupation}
                 />
                 <Box
                   gridColumn="span 4"
@@ -279,6 +284,8 @@ const Form = () => {
             <Typography
               onClick={() => {
                 setPageType(isLogin ? "register" : "login");
+                resetForm();
+                setFormError(null);
               }}
               sx={{
                 textDecoration: "underline",
