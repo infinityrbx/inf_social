@@ -44,12 +44,11 @@ export const getUserFriends = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.header._id;
 
-    // USER AUTH (Work later)
-    // const userId = req.header._id;
-    // // if (id !== userId) {
-    // //   res.status(400).json({ message: "You are not authorized" });
-    // // }
+    // if (id !== userId) {
+    //   res.status(400).json({ message: "You are not authorized" });
+    // }
 
     const updatedUser = await User.findByIdAndUpdate(
       id,
