@@ -34,6 +34,7 @@ const PostWidget = ({
   comments,
 }) => {
   const [isComments, setIsComments] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user._id);
@@ -120,6 +121,29 @@ const PostWidget = ({
     }
   };
 
+  const deletePost = async () => {
+    try {
+      setIsDeleting(true);
+      const response = await fetch(`http://localhost:3005/posts/${postId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.ok) {
+        // On successful deletion, you might redirect or update UI
+        // For example, you could dispatch an action to remove the post from your state
+        // Or reload the page
+        window.location.reload();
+      } else {
+        throw new Error("Failed to delete post");
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   useEffect(() => {
     const fetchAuthor = async (userId) => {
       try {
@@ -174,6 +198,11 @@ const PostWidget = ({
       <FlexBetween mt="0.25rem">
         <FlexBetween gap="1rem">
           <FlexBetween gap="0.3rem">
+            {postUserId === loggedInUserId && ( // Show delete button only for the post author
+              <IconButton disabled={isDeleting} onClick={deletePost}>
+                <DeleteOutlineOutlined sx={{ color: "error.main" }} />
+              </IconButton>
+            )}
             <IconButton onClick={patchLike}>
               {isLiked ? (
                 <FavoriteOutlined sx={{ color: primary }} />
