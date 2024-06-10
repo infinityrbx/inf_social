@@ -109,7 +109,6 @@ const PostWidget = ({
           },
         }
       );
-      debugger;
       if (!response.ok) {
         throw new Error("Failed to delete comment");
       }
