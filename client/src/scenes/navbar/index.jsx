@@ -30,6 +30,7 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
+  const token = useSelector((state) => state.token);
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
 
   const theme = useTheme();
@@ -39,13 +40,39 @@ const Navbar = () => {
   const primaryLight = theme.palette.primary.light;
   const alt = theme.palette.background.alt;
   const fullName = `${user.firstName} ${user.lastName}`;
+  const userId = `${user._id}`;
+
+  const handleUserDelete = async () => {
+    try {
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete your account?"
+      );
+
+      if (confirmDelete) {
+        const response = await fetch(`http://localhost:3005/users/${userId}/`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        alert("Your account has been successfully deleted.");
+        dispatch(setLogout());
+        navigate("/");
+        response.status(200);
+      }
+    } catch (err) {
+      console.error("Error deleting user:", err);
+      alert(
+        "There was an error deleting your account. Please try again later."
+      );
+    }
+  };
 
   const handleLogout = async () => {
     try {
       dispatch(setLogout());
       navigate("/");
-    } catch (error) {
-      console.error("Logout error:", error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -115,6 +142,7 @@ const Navbar = () => {
               <MenuItem value={fullName}>
                 <Typography>{fullName}</Typography>
               </MenuItem>
+              <MenuItem onClick={handleUserDelete}>Delete Account</MenuItem>
               <MenuItem onClick={handleLogout}>Log Out</MenuItem>
             </Select>
           </FormControl>
@@ -189,6 +217,7 @@ const Navbar = () => {
                 <MenuItem value={fullName}>
                   <Typography>{fullName}</Typography>
                 </MenuItem>
+                <MenuItem onClick={handleUserDelete}>Delete Account</MenuItem>
                 <MenuItem onClick={handleLogout}>Log Out</MenuItem>
               </Select>
             </FormControl>
