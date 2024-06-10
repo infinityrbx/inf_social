@@ -130,9 +130,6 @@ const PostWidget = ({
       });
 
       if (response.ok) {
-        // On successful deletion, you might redirect or update UI
-        // For example, you could dispatch an action to remove the post from your state
-        // Or reload the page
         window.location.reload();
       } else {
         throw new Error("Failed to delete post");
