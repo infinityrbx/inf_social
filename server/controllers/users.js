@@ -106,3 +106,15 @@ export const addRemoveFriend = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+/* DELETE */
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedUser = await User.findByIdAndDelete(id);
+    res.status(201).json("User has been deleted");
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};

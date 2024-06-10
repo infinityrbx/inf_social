@@ -27,6 +27,39 @@ export const createPost = async (req, res) => {
   }
 };
 
+export const createCommentPost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const { userId, comment } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: "Invalid post ID" });
+    }
+    if (!comment) {
+      return res.status(400).json({ message: "Comment text is required" });
+    }
+    const postObjectId = new mongoose.Types.ObjectId(postId);
+    const post = await Post.findById(postObjectId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const newComment = {
+      userId,
+      comment,
+    };
+
+    const updatedPost = await Post.findByIdAndUpdate(
+      postObjectId,
+      { $push: { comments: newComment } },
+      { new: true }
+    );
+
+    res.status(201).json(updatedPost);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
 /* READ */
 export const getFeedPosts = async (req, res) => {
   try {
@@ -89,36 +122,21 @@ export const likePost = async (req, res) => {
   }
 };
 
-export const createCommentPost = async (req, res) => {
+/* DELETE */
+
+export const deletePost = async (req, res) => {
   try {
     const postId = req.params.id;
-    const { userId, comment } = req.body;
+
     if (!mongoose.Types.ObjectId.isValid(postId)) {
       return res.status(400).json({ message: "Invalid post ID" });
     }
-    if (!comment) {
-      return res.status(400).json({ message: "Comment text is required" });
-    }
     const postObjectId = new mongoose.Types.ObjectId(postId);
-    const post = await Post.findById(postObjectId);
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
 
-    const newComment = {
-      userId,
-      comment,
-    };
-
-    const updatedPost = await Post.findByIdAndUpdate(
-      postObjectId,
-      { $push: { comments: newComment } },
-      { new: true }
-    );
-
-    res.status(201).json(updatedPost);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
+    const post = await Post.findByIdAndDelete(postObjectId);
+    res.status(200).json("Post has been deleted");
+  } catch (err) {
+    res.status(404).json({ message: err.message });
   }
 };
 
