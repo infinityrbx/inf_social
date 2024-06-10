@@ -3,6 +3,7 @@ import {
   FavoriteBorderOutlined,
   FavoriteOutlined,
   ShareOutlined,
+  DeleteOutlineOutlined,
 } from "@mui/icons-material";
 import {
   Avatar,
@@ -97,6 +98,28 @@ const PostWidget = ({
   };
 
   const [commentAuthors, setCommentAuthors] = useState({});
+  const deleteComment = async (commentId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3005/posts/${postId}/comment/${commentId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      debugger;
+      if (!response.ok) {
+        throw new Error("Failed to delete comment");
+      }
+
+      const updatedPost = await response.json();
+      dispatch(setPost({ post: updatedPost }));
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchAuthor = async (userId) => {
@@ -115,7 +138,6 @@ const PostWidget = ({
         return null;
       }
     };
-
     const uniqueUserIds = [
       ...new Set(comments.map((comment) => comment.userId)),
     ];
@@ -177,7 +199,8 @@ const PostWidget = ({
         <Box mt="0.5rem">
           {comments.map((comment) => {
             const author = commentAuthors[comment.userId];
-            const key = `${comment._id.$oid}-${Math.random()}`;
+            const key = `${comment._id}-${Math.random()}`;
+            const showDeleteButton = comment.userId === loggedInUserId;
             return (
               <Box key={key}>
                 {" "}
@@ -199,6 +222,16 @@ const PostWidget = ({
                     </Typography>
                   </Box>
                 </Box>
+                <FlexBetween>
+                  {showDeleteButton && (
+                    <IconButton
+                      size="small"
+                      onClick={() => deleteComment(comment._id)}
+                    >
+                      <DeleteOutlineOutlined sx={{ color: "error.main" }} />
+                    </IconButton>
+                  )}
+                </FlexBetween>
                 <Divider sx={{ margin: "0.5rem 0" }} />{" "}
               </Box>
             );

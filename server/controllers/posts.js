@@ -144,7 +144,6 @@ export const deleteCommentPost = async (req, res) => {
   try {
     const postId = req.params.id;
     const commentId = req.params.commentId;
-    const userId = req.body.userId;
 
     if (
       !mongoose.Types.ObjectId.isValid(postId) ||
@@ -155,8 +154,8 @@ export const deleteCommentPost = async (req, res) => {
 
     const updatedPost = await Post.findOneAndUpdate(
       { _id: postId },
-      { $pull: { comments: { _id: commentId, userId } } },
-      { new: true } // Return the updated document
+      { $pull: { comments: { _id: commentId } } },
+      { new: true }
     );
 
     if (!updatedPost) {
