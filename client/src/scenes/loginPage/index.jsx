@@ -1,4 +1,5 @@
 import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import Form from "./Form";
 
 const LoginPage = () => {
@@ -30,7 +31,9 @@ const LoginPage = () => {
         <Typography fontWeight="500" variant="h5" sx={{ mb: "1.5rem" }}>
           Welcome to Inf_Social!!
         </Typography>
-        <Form />
+        <GoogleOAuthProvider clientId="367634902827-disvalbajo4k945ogf8c91hb67icfi0n.apps.googleusercontent.com">
+          <Form />
+        </GoogleOAuthProvider>
       </Box>
     </Box>
   );

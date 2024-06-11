@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/Users.js";
+import oauth2Client from "../utils/oauth2client.js";
 /* REGISTER USER */
 export const register = async (req, res) => {
   try {
@@ -59,6 +60,57 @@ export const login = async (req, res) => {
     res.status(200).send({ token, user });
   } catch (err) {
     console.log(err);
+    res.status(500).send({ error: err.message });
+  }
+};
+
+// ... other functions (register, login) ...
+
+export const googleAuth = async (req, res) => {
+  try {
+    const code = req.query.code; // Extract code from query parameter
+
+    console.log("USER CREDENTIAL -> ", code);
+
+    const googleRes = await oauth2Client.getToken(code);
+    oauth2Client.oauth2Client.setCredentials(googleRes.tokens);
+
+    const userRes = await fetch(
+      `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`,
+      {
+        method: "GET",
+      }
+    );
+
+    let user = await User.findOne({ email: userRes.data.email });
+
+    const userData = await userRes.json();
+
+    // Find or create the user in your database
+
+    if (!user) {
+      // Create a new user if they don't exist
+      const newUser = new User({
+        firstName: userData.given_name,
+        lastName: userData.family_name,
+        email: userData.email,
+        password: await bcrypt.hash(userData.id, 10), // Hash a random ID for security
+        picturePath: userData.picture,
+        // Other fields as needed (occupation, location, etc.)
+      });
+      user = await newUser.save();
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    delete user.password; // Don't send the password back to the client
+
+    res.status(200).json({ token, user });
+  } catch (err) {
+    console.error(
+      "Error in googleAuth:",
+      err.response ? err.response.data : err
+    );
     res.status(500).send({ error: err.message });
   }
 };

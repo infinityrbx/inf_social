@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -13,6 +13,7 @@ import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLogin } from "states";
+import GoogleLoginButton from "components/GoogleLogin";
 import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
 import "react-toastify/dist/ReactToastify.css";
@@ -132,6 +133,20 @@ const Form = () => {
     if (isLogin) await login(values, onSubmitProps);
     if (isRegister) await register(values, onSubmitProps);
   };
+
+  useEffect(() => {
+    const handlePostMessage = (event) => {
+      if (event.data.type === "googleAuthSuccess") {
+        const data = event.data.data;
+        dispatch(setLogin({ user: data.user, token: data.token }));
+        navigate("/home");
+      }
+    };
+
+    window.addEventListener("message", handlePostMessage);
+
+    return () => window.removeEventListener("message", handlePostMessage); // Cleanup
+  }, [dispatch, navigate]);
 
   return (
     <Formik
@@ -267,6 +282,13 @@ const Form = () => {
 
           {/* Buttons */}
           <Box>
+            <GoogleLoginButton
+              type="button"
+              onLoginSuccess={(data) => {
+                dispatch(setLogin({ user: data.user, token: data.token }));
+                navigate("/home");
+              }}
+            />
             <Button
               fullWidth
               type="submit"
