@@ -18,6 +18,7 @@ import {
 import FlexBetween from "components/FlexBetween";
 import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
+import CommentSection from "components/CommentSection";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost } from "states";
@@ -35,12 +36,12 @@ const PostWidget = ({
 }) => {
   const [isComments, setIsComments] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [newComment, setNewComment] = useState("");
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user._id);
   const isLiked = likes ? Boolean(likes[loggedInUserId]) : false;
   const likeCount = likes ? Object.keys(likes).length : 0;
-  const [newComment, setNewComment] = useState("");
 
   const { palette } = useTheme();
   const primary = palette.primary.main;
@@ -220,68 +221,16 @@ const PostWidget = ({
           <ShareOutlined />
         </IconButton>
       </FlexBetween>
-      {isComments && (
-        <Box mt="0.5rem">
-          {comments.map((comment) => {
-            const author = commentAuthors[comment.userId];
-            const key = `${comment._id}-${Math.random()}`;
-            const showDeleteButton = comment.userId === loggedInUserId;
-            return (
-              <Box key={key}>
-                {" "}
-                <Box display="flex" alignItems="flex-start" gap="1rem">
-                  {author && (
-                    <Avatar
-                      src={`http://localhost:3005/assets/${author.picturePath}`}
-                      sx={{ width: 50, height: 50 }}
-                    />
-                  )}
-                  <Box>
-                    <Typography sx={{ color: main, fontWeight: "bold" }}>
-                      {author
-                        ? `${author.firstName} ${author.lastName}`
-                        : "Unknown Author"}
-                    </Typography>
-                    <Typography sx={{ color: main, m: "0.5rem 0" }}>
-                      {comment.comment}
-                    </Typography>
-                  </Box>
-                </Box>
-                <FlexBetween>
-                  {showDeleteButton && (
-                    <IconButton
-                      size="small"
-                      onClick={() => deleteComment(comment._id)}
-                    >
-                      <DeleteOutlineOutlined sx={{ color: "error.main" }} />
-                    </IconButton>
-                  )}
-                </FlexBetween>
-                <Divider sx={{ margin: "0.5rem 0" }} />{" "}
-              </Box>
-            );
-          })}
-          <FlexBetween gap="1rem">
-            <TextField
-              label="Add a comment..."
-              variant="outlined"
-              size="small"
-              fullWidth
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              onClick={handlePostComment}
-              disabled={newComment.trim() === ""} // Disable if comment is empty
-            >
-              Post
-            </Button>
-          </FlexBetween>
-        </Box>
-      )}
+      <CommentSection
+        comments={comments}
+        commentAuthors={commentAuthors}
+        isComments={isComments}
+        newComment={newComment}
+        setNewComment={setNewComment}
+        handlePostComment={handlePostComment}
+        deleteComment={deleteComment}
+        loggedInUserId={loggedInUserId}
+      />
     </WidgetWrapper>
   );
 };
