@@ -5,16 +5,7 @@ import {
   ShareOutlined,
   DeleteOutlineOutlined,
 } from "@mui/icons-material";
-import {
-  Avatar,
-  Box,
-  Divider,
-  IconButton,
-  Typography,
-  useTheme,
-  TextField,
-  Button,
-} from "@mui/material";
+import { IconButton, Typography, useTheme } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
