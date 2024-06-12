@@ -37,6 +37,7 @@ const UserWidget = ({ userId, picturePath }) => {
     const data = await response.json();
     setUser(data);
   };
+
   useEffect(() => {
     getUser();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -54,7 +55,6 @@ const UserWidget = ({ userId, picturePath }) => {
     impressions,
     friends,
   } = user;
-  // State for dialog
 
   const handleOpenDialog = () => {
     setOpenDialog(true);

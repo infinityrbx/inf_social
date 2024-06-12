@@ -28,9 +28,13 @@ const PostWidget = ({
   const [isComments, setIsComments] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [newComment, setNewComment] = useState("");
+  const [commentAuthors, setCommentAuthors] = useState({});
+
   const dispatch = useDispatch();
+
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user._id);
+
   const isLiked = likes ? Boolean(likes[loggedInUserId]) : false;
   const likeCount = likes ? Object.keys(likes).length : 0;
 
@@ -90,7 +94,6 @@ const PostWidget = ({
     }
   };
 
-  const [commentAuthors, setCommentAuthors] = useState({});
   const deleteComment = async (commentId) => {
     try {
       const response = await fetch(
