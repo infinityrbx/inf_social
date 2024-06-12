@@ -28,7 +28,6 @@ const UserDetailEditForm = ({ userId, onClose }) => {
         setError(err.message);
       }
     };
-
     fetchUserData();
   }, [userId, token]);
 
