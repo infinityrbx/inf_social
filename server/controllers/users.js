@@ -43,20 +43,16 @@ export const getUserFriends = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const { id } = req.params;
-    const userId = req.header._id;
-
-    // if (id !== userId) {
-    //   res.status(400).json({ message: "You are not authorized" });
-    // }
-
+    const userId = req.user.id;
+    console.log("userId", userId);
     const updatedUser = await User.findByIdAndUpdate(
-      id,
+      userId,
       { $set: req.body },
       { new: true }
     );
     res.status(201).json(updatedUser);
   } catch (err) {
+    console.log(err);
     res.status(404).json({ message: err.message });
   }
 };
@@ -112,7 +108,11 @@ export const addRemoveFriend = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedUser = await User.findByIdAndDelete(id);
+    // if (req.user.id !== req.params.id) {
+    //   return res.status(403).send("Access Denied");
+    // }
+
+    await User.findByIdAndDelete(id);
     res.status(201).json("User has been deleted");
   } catch (err) {
     res.status(404).json({ message: err.message });

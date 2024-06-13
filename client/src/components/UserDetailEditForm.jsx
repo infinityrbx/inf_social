@@ -37,15 +37,19 @@ const UserDetailEditForm = ({ userId, onClose }) => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch(`http://localhost:3005/users/${userId}`, {
+      const response = await fetch(`http://localhost:3005/users`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          location: formData.location,
+          occupation: formData.occupation,
+        }),
       });
-
       if (!response.ok) {
         throw new Error("Failed to update user data");
       }
