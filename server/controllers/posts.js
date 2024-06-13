@@ -31,6 +31,7 @@ export const createCommentPost = async (req, res) => {
   try {
     const postId = req.params.id;
     const { userId, comment } = req.body;
+
     if (!mongoose.Types.ObjectId.isValid(postId)) {
       return res.status(400).json({ message: "Invalid post ID" });
     }
