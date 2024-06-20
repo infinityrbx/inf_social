@@ -56,7 +56,7 @@ const MyPostWidget = ({ picturePath }) => {
       const posts = await response.json();
       dispatch(setPosts({ posts }));
     } catch (error) {
-      console.error("Error posting:", error); // Log the error
+      console.error("Error posting:", error);
     } finally {
       setImage(null);
       setPost("");
