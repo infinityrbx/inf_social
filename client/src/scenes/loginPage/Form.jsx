@@ -62,7 +62,7 @@ const Form = () => {
       const formData = new FormData();
       for (let value in values) {
         if (value === "picture" && values.picture) {
-          formData.append(value, values.picture);
+          formData.append("picture", values.picture);
         } else {
           formData.append(value, values[value]);
         }
