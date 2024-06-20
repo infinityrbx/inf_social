@@ -45,7 +45,7 @@ const PostWidget = ({
   const handlePostComment = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3005/posts/${postId}/comment`,
+        `https://inf-social.onrender.com/posts/${postId}/comment`,
         {
           method: "POST",
           headers: {
@@ -72,7 +72,7 @@ const PostWidget = ({
   const patchLike = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3005/posts/${postId}/like`,
+        `https://inf-social.onrender.com/posts/${postId}/like`,
         {
           method: "PATCH",
           headers: {
@@ -97,7 +97,7 @@ const PostWidget = ({
   const deleteComment = async (commentId) => {
     try {
       const response = await fetch(
-        `http://localhost:3005/posts/${postId}/comment/${commentId}`,
+        `https://inf-social.onrender.com/posts/${postId}/comment/${commentId}`,
         {
           method: "DELETE",
           headers: {
@@ -119,10 +119,13 @@ const PostWidget = ({
   const deletePost = async () => {
     try {
       setIsDeleting(true);
-      const response = await fetch(`http://localhost:3005/posts/${postId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `https://inf-social.onrender.com/posts/${postId}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (response.ok) {
         window.location.reload();
@@ -139,13 +142,16 @@ const PostWidget = ({
   useEffect(() => {
     const fetchAuthor = async (userId) => {
       try {
-        const response = await fetch(`http://localhost:3005/users/${userId}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          `https://inf-social.onrender.com/users/${userId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
         const data = await response.json();
         return data;
       } catch (error) {

@@ -32,7 +32,7 @@ const CommentSection = ({
               <Box display="flex" alignItems="flex-start" gap="1rem">
                 {author && (
                   <Avatar
-                    src={`http://localhost:3005/assets/${author.picturePath}`}
+                    src={`https://inf-social.onrender.com/assets/${author.picturePath}`}
                     sx={{ width: 50, height: 50 }}
                   />
                 )}

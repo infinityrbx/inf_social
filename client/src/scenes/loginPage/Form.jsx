@@ -72,7 +72,7 @@ const Form = () => {
       }
 
       const savedUserResponse = await fetch(
-        "http://localhost:3005/auth/register",
+        "https://inf-social.onrender.com/auth/register",
         {
           method: "POST",
           body: formData,
@@ -100,11 +100,14 @@ const Form = () => {
 
   const login = async (values, onSubmitProps) => {
     try {
-      const loggedInResponse = await fetch("http://localhost:3005/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+      const loggedInResponse = await fetch(
+        "https://inf-social.onrender.com/auth/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        }
+      );
       const loggedIn = await loggedInResponse.json();
 
       if (loggedInResponse.ok) {

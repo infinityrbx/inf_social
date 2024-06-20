@@ -49,10 +49,13 @@ const Navbar = () => {
       );
 
       if (confirmDelete) {
-        const response = await fetch(`http://localhost:3005/users/${userId}/`, {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(
+          `https://inf-social.onrender.com/users/${userId}/`,
+          {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         alert("Your account has been successfully deleted.");
         dispatch(setLogout());

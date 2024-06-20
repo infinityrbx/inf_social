@@ -15,9 +15,12 @@ const UserDetailEditForm = ({ userId, onClose }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`http://localhost:3005/users/${userId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(
+          `https://inf-social.onrender.com/users/${userId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
         }
@@ -37,7 +40,7 @@ const UserDetailEditForm = ({ userId, onClose }) => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch(`http://localhost:3005/users`, {
+      const response = await fetch(`https://inf-social.onrender.com/users`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
