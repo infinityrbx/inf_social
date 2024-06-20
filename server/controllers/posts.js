@@ -1,12 +1,32 @@
 import mongoose from "mongoose";
+import { v2 as cloudinary } from "cloudinary";
+import streamifier from "streamifier";
 import Post from "../models/Posts.js";
 import User from "../models/Users.js";
 
 /* CREATE */
 export const createPost = async (req, res) => {
   try {
-    const { userId, description, picturePath } = req.body;
+    const { userId, description } = req.body;
     const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    let picturePath = null;
+    if (req.file) {
+      picturePath = await new Promise((resolve, reject) => {
+        let stream = cloudinary.uploader.upload_stream((error, result) => {
+          if (result) {
+            resolve(result.secure_url);
+          } else {
+            reject(error);
+          }
+        });
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+      });
+    }
+
     const newPost = new Post({
       userId,
       firstName: user.firstName,
@@ -15,13 +35,14 @@ export const createPost = async (req, res) => {
       description,
       userPicturePath: user.picturePath,
       picturePath,
-      like: {},
+      likes: {},
       comments: [],
     });
+
     await newPost.save();
 
-    const post = await Post.find();
-    res.status(201).json(post);
+    const posts = await Post.find();
+    res.status(201).json(posts);
   } catch (err) {
     res.status(409).json({ message: err.message });
   }

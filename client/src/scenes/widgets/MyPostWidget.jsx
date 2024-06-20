@@ -46,15 +46,21 @@ const MyPostWidget = ({ picturePath }) => {
       formData.append("picturePath", image.name);
     }
 
-    const response = await fetch(`http://localhost:3005/posts`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    });
-    const posts = await response.json();
-    dispatch(setPosts({ posts }));
-    setImage(null);
-    setPost("");
+    try {
+      const response = await fetch(`http://localhost:3005/posts`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      const posts = await response.json();
+      dispatch(setPosts({ posts }));
+    } catch (error) {
+      console.error("Error posting:", error); // Log the error
+    } finally {
+      setImage(null);
+      setPost("");
+    }
   };
 
   return (

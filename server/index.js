@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import multer from "multer";
 import helmet from "helmet";
 import morgan from "morgan";
+import { v2 as cloudinary } from "cloudinary";
 import path from "path";
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
@@ -29,8 +30,15 @@ app.use(bodyParser.urlencoded({ limit: "30mb", extented: "true" }));
 app.use(cors());
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 // FILE STORAGE
 
+// Local File
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
 //     cb(null, "public/assets");
@@ -40,13 +48,11 @@ app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 //   },
 // });
 
-const storage = multer.diskStorage({
-  filename: function (req,file,cb) {
-    cb(null, file.originalname)
-  }
+// Cloudinary
+const storage = new multer.memoryStorage();
+const upload = multer({
+  storage,
 });
-
-const upload = multer({storage: storage });
 
 //  ROUTE WITH FILE
 
