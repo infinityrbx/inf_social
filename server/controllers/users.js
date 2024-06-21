@@ -103,6 +103,20 @@ export const addRemoveFriend = async (req, res) => {
   }
 };
 
+export const setFreeze = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { isFrozen: true },
+      { new: true } // Return the updated document
+    );
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+
 /* DELETE */
 
 export const deleteUser = async (req, res) => {

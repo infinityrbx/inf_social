@@ -5,6 +5,7 @@ import {
   getUserFriends,
   updateUser,
   addRemoveFriend,
+  setFreeze,
   deleteUser,
 } from "../controllers/users.js";
 
@@ -20,9 +21,10 @@ router.get("/:id/friends", verifyToken, getUserFriends);
 /* UPDATE */
 router.put("/", verifyToken, updateUser);
 router.patch("/:id/:friendId", verifyToken, addRemoveFriend);
+router.patch("/:id", verifyToken, setFreeze);
 
 /* DELETE */
 
-router.delete("/:id", verifyToken, deleteUser);
+// router.delete("/:id", verifyToken, deleteUser);
 
 export default router;
