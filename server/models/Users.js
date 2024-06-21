@@ -27,7 +27,8 @@ const userSchema = new mongoose.Schema(
     },
     picturePath: {
       type: String,
-      default: "def_avatar.jpg",
+      default:
+        "https://i0.wp.com/sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png?w=300&ssl=1",
     },
     friends: {
       type: Array,
@@ -37,6 +38,10 @@ const userSchema = new mongoose.Schema(
     occupation: String,
     viewedProfile: Number,
     impression: Number,
+    isFrozen: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

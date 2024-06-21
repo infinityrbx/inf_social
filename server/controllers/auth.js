@@ -69,7 +69,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email });
+    let user = await User.findOne({ email: email });
     console.log(user);
     if (!user)
       return res
@@ -82,6 +82,8 @@ export const login = async (req, res) => {
         .status(400)
         .json({ msg: "User name or Password isn't correct." });
 
+    await User.findByIdAndUpdate(user._id, { isFrozen: false });
+    user = await User.findOne({ email });
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
     delete user.password;
     res.status(200).send({ token, user });
