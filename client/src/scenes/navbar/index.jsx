@@ -42,30 +42,26 @@ const Navbar = () => {
   const fullName = `${user.firstName} ${user.lastName}`;
   const userId = `${user._id}`;
 
-  const handleUserDelete = async () => {
+  const handleUserFreeze = async () => {
     try {
-      const confirmDelete = window.confirm(
-        "Are you sure you want to delete your account?"
+      const confirmFreeze = window.confirm(
+        "Are you sure you want to freeze your account?"
       );
 
-      if (confirmDelete) {
-        const response = await fetch(
-          `https://inf-social.onrender.com/users/${userId}/`,
-          {
-            method: "DELETE",
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+      if (confirmFreeze) {
+        await fetch(`https://inf-social.onrender.com/users/${userId}`, {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-        alert("Your account has been successfully deleted.");
+        alert("Your account has been successfully freeze.");
         dispatch(setLogout());
         navigate("/");
-        response.status(200);
       }
     } catch (err) {
-      console.error("Error deleting user:", err);
+      console.error("Error freezing user:", err);
       alert(
-        "There was an error deleting your account. Please try again later."
+        "There was an error freezing your account. Please try again later."
       );
     }
   };
@@ -145,7 +141,7 @@ const Navbar = () => {
               <MenuItem value={fullName}>
                 <Typography>{fullName}</Typography>
               </MenuItem>
-              <MenuItem onClick={handleUserDelete}>Delete Account</MenuItem>
+              <MenuItem onClick={handleUserFreeze}>Freeze Account</MenuItem>
               <MenuItem onClick={handleLogout}>Log Out</MenuItem>
             </Select>
           </FormControl>
@@ -220,7 +216,7 @@ const Navbar = () => {
                 <MenuItem value={fullName}>
                   <Typography>{fullName}</Typography>
                 </MenuItem>
-                <MenuItem onClick={handleUserDelete}>Delete Account</MenuItem>
+                <MenuItem onClick={handleUserFreeze}>Freeze Account</MenuItem>
                 <MenuItem onClick={handleLogout}>Log Out</MenuItem>
               </Select>
             </FormControl>

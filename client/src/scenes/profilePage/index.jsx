@@ -1,4 +1,4 @@
-import { Box, useMediaQuery } from "@mui/material";
+import { Box, useMediaQuery, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -30,6 +30,25 @@ const ProfilePage = () => {
   }, []); //eslint-disable-line react-hooks/exhaustive-deps
 
   if (!user) return null;
+
+  if (user.isFrozen) {
+    // Check if user is frozen
+    return (
+      <Box>
+        <Navbar />
+        <Box
+          width="100%"
+          padding="2rem 6%"
+          display="flex"
+          justifyContent="center"
+        >
+          <Typography variant="h4" textAlign="center">
+            This user has been frozen.
+          </Typography>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box>
