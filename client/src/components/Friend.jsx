@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setFriends } from "states";
 import FlexBetween from "./FlexBetween";
-import UserImage from "./UserImage";
+import UserPicture from "./UserPicture";
 
 const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   const dispatch = useDispatch();
@@ -33,7 +33,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   return (
     <FlexBetween>
       <FlexBetween gap="1rem">
-        <UserImage image={userPicturePath} size="55x" />
+        <UserPicture image={userPicturePath} size="55x" />
         <Box
           onClick={() => {
             navigate(`/profile/${friendId}`);

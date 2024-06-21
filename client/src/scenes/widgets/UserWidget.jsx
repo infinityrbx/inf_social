@@ -11,7 +11,7 @@ import {
   Dialog,
   DialogContent,
 } from "@mui/material";
-import UserImage from "components/UserImage";
+import UserPicture from "components/UserPicture";
 import FlexBetween from "components/FlexBetween";
 import WidgetWrapper from "components/WidgetWrapper";
 import UserDetailEditForm from "components/UserDetailEditForm";
@@ -73,7 +73,7 @@ const UserWidget = ({ userId, picturePath }) => {
       {/* 1st ROW */}
       <FlexBetween gap="0.5rem" pb="1.1rem">
         <FlexBetween gap="1rem">
-          <UserImage image={picturePath} />
+          <UserPicture image={picturePath} />
           <Box>
             <Typography
               variant="h4"
