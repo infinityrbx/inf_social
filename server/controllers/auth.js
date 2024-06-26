@@ -3,6 +3,11 @@ import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import streamifier from "streamifier";
 import User from "../models/Users.js";
+
+const signToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET);
+};
+
 /* REGISTER USER */
 export const register = async (req, res) => {
   try {
@@ -21,20 +26,16 @@ export const register = async (req, res) => {
 
     let picturePath = null;
     if (req.file) {
-      // Check if a file was uploaded
       picturePath = await new Promise((resolve, reject) => {
         let stream = cloudinary.uploader.upload_stream((error, result) => {
           if (result) {
-            resolve(result.secure_url); // Get the secure URL from Cloudinary
+            resolve(result.secure_url);
           } else {
             reject(error);
           }
         });
         streamifier.createReadStream(req.file.buffer).pipe(stream);
       });
-    } else {
-      // Set a default profile picture if no image is provided
-      picturePath = "path/to/default/profile/image.jpg";
     }
 
     const newUser = new User({
@@ -42,20 +43,18 @@ export const register = async (req, res) => {
       lastName,
       email,
       password: pwdHash,
-      picturePath, // Use the picturePath
+      picturePath,
       friends,
       location,
       occupation,
-      viewedProfile: 0, // Initialize as numbers
+      viewedProfile: 0,
       impressions: 0,
     });
     const savedUser = await newUser.save();
     res.status(201).json(savedUser);
   } catch (err) {
-    // Enhanced Error Handling
-    console.error("Registration Error:", err); // Log the detailed error
+    console.error("Registration Error:", err);
     if (err.code === 11000) {
-      // MongoDB duplicate key error
       res.status(409).json({ message: "User with this email already exists" });
     } else {
       res
@@ -84,7 +83,7 @@ export const login = async (req, res) => {
 
     await User.findByIdAndUpdate(user._id, { isFrozen: false });
     user = await User.findOne({ email });
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = signToken(user._id);
     delete user.password;
     res.status(200).send({ token, user });
   } catch (err) {
