@@ -10,6 +10,7 @@ import FlexBetween from "components/FlexBetween";
 import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
 import CommentSection from "components/CommentSection";
+import { formatDistanceToNow } from "date-fns";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost } from "states";
@@ -24,6 +25,7 @@ const PostWidget = ({
   userPicturePath,
   likes,
   comments,
+  createdAt,
 }) => {
   const [isComments, setIsComments] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -37,6 +39,8 @@ const PostWidget = ({
 
   const isLiked = likes ? Boolean(likes[loggedInUserId]) : false;
   const likeCount = likes ? Object.keys(likes).length : 0;
+
+  const timeAgo = formatDistanceToNow(new Date(createdAt), { addSuffix: true });
 
   const { palette } = useTheme();
   const primary = palette.primary.main;
@@ -181,6 +185,9 @@ const PostWidget = ({
         subtitle={location}
         userPicturePath={userPicturePath}
       />
+      <Typography variant="caption" color="textSecondary" sx={{ mt: "0.5rem" }}>
+        {timeAgo}
+      </Typography>
       <Typography color={main} sx={{ mt: "1rem" }}>
         {description}
       </Typography>
@@ -196,7 +203,7 @@ const PostWidget = ({
       <FlexBetween mt="0.25rem">
         <FlexBetween gap="1rem">
           <FlexBetween gap="0.3rem">
-            {postUserId === loggedInUserId && ( // Show delete button only for the post author
+            {postUserId === loggedInUserId && (
               <IconButton disabled={isDeleting} onClick={deletePost}>
                 <DeleteOutlineOutlined sx={{ color: "error.main" }} />
               </IconButton>
