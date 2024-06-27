@@ -19,7 +19,8 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
 
-  const isFriend = friends.find((friend) => friend._id === friendId); // Need error handle
+  const isFriend = friends.find((friend) => friend._id === friendId);
+
 
   const patchFriend = async () => {
     const response = await fetch(
@@ -61,6 +62,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
       <IconButton
         onClick={() => patchFriend()}
         sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
+        style={{ display: friendId === _id ? "none" : "flex" }}
       >
         {isFriend ? (
           <PersonRemoveOutlined sx={{ color: primaryDark }} />
