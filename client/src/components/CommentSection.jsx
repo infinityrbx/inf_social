@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { DeleteOutlineOutlined } from "@mui/icons-material";
 import FlexBetween from "./FlexBetween";
+import { formatDistanceToNow } from "date-fns";
 
 const CommentSection = ({
   comments,
@@ -27,6 +28,9 @@ const CommentSection = ({
           const author = commentAuthors[comment.userId];
           const key = `${comment._id}-${Math.random()}`;
           const showDeleteButton = comment.userId === loggedInUserId;
+          const timeAgo = formatDistanceToNow(new Date(comment.createdAt), {
+            addSuffix: true,
+          });
           return (
             <Box key={key}>
               <Box display="flex" alignItems="flex-start" gap="1rem">
@@ -44,7 +48,8 @@ const CommentSection = ({
                       ? `${author.firstName} ${author.lastName}`
                       : "Unknown Author"}
                   </Typography>
-                  <Typography sx={{ color: "text.secondary", m: "0.5rem 0" }}>
+                  <Typography sx={{ color: "text.secondary" }}>{timeAgo}</Typography>
+                  <Typography sx={{ color: "text.primary", m: "0.5rem 0" }}>
                     {comment.comment}
                   </Typography>
                 </Box>
