@@ -151,6 +151,7 @@ const Form = () => {
         handleSubmit,
         setFieldValue,
         resetForm,
+        isSubmitting
       }) => (
         <form onSubmit={handleSubmit}>
           {formError && (
@@ -273,6 +274,7 @@ const Form = () => {
             <Button
               fullWidth
               type="submit"
+              disabled={isSubmitting}
               sx={{
                 m: "2rem 0",
                 p: "1rem",

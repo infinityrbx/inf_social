@@ -29,6 +29,7 @@ const MyPostWidget = ({ picturePath }) => {
   const dispatch = useDispatch();
   const [isImage, setIsImage] = useState(false);
   const [image, setImage] = useState(null);
+  const [isPosting, setIsPosting] = useState(false);
   const [post, setPost] = useState("");
   const { _id } = useSelector((state) => state.user);
   const { palette } = useTheme();
@@ -38,6 +39,7 @@ const MyPostWidget = ({ picturePath }) => {
   const medium = palette.neutral.medium;
 
   const handlePost = async () => {
+    setIsPosting(true)
     const formData = new FormData();
     formData.append("userId", _id);
     formData.append("description", post);
@@ -58,6 +60,7 @@ const MyPostWidget = ({ picturePath }) => {
     } catch (error) {
       console.error("Error posting:", error);
     } finally {
+      setIsPosting(false)
       setImage(null);
       setPost("");
     }
@@ -157,7 +160,7 @@ const MyPostWidget = ({ picturePath }) => {
         )}
 
         <Button
-          disabled={!post}
+          disabled={!post || isPosting}
           onClick={handlePost}
           sx={{
             color: palette.background.alt,
