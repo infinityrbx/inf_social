@@ -24,7 +24,7 @@ export const register = async (req, res) => {
     const salt = await bcrypt.genSalt();
     const pwdHash = await bcrypt.hash(password, salt);
 
-    let picturePath = null;
+    let picturePath = "https://i0.wp.com/sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png?w=300&ssl=1";
     if (req.file) {
       picturePath = await new Promise((resolve, reject) => {
         let stream = cloudinary.uploader.upload_stream((error, result) => {
