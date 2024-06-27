@@ -91,3 +91,31 @@ export const login = async (req, res) => {
     res.status(500).send({ error: err.message });
   }
 };
+
+export const updatePassword = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const oldPassword = req.body.oldpassword
+    const newPassword = req.body.newpassword
+    const user = await User.findById(userId)
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+    
+    if (!isMatch)
+      return res
+        .status(400)
+        .json({ msg: "Old password isn't correct." });
+        
+    const salt = await bcrypt.genSalt();
+    const pwdHash = await bcrypt.hash(newPassword, salt);
+
+    await User.findByIdAndUpdate(
+      userId,
+      { $set: {password: pwdHash} },
+    );
+    res.status(201).json("Password has changed");
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err.message });
+  }
+};

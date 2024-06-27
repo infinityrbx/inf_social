@@ -9,6 +9,8 @@ import {
   FormControl,
   useTheme,
   useMediaQuery,
+  Dialog,
+  DialogContent,
 } from "@mui/material";
 import {
   Search,
@@ -24,11 +26,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout } from "states";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
+import {UpdatePasswordForm} from "components/UpdatePasswordForm"
 
 const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [openDialog, setOpenDialog] = useState(false);
   const user = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
@@ -73,6 +77,14 @@ const Navbar = () => {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
   };
 
   return (
@@ -141,7 +153,8 @@ const Navbar = () => {
               <MenuItem value={fullName}>
                 <Typography>{fullName}</Typography>
               </MenuItem>
-              <MenuItem onClick={handleUserFreeze}>Freeze Account</MenuItem>
+              <MenuItem onClick={handleOpenDialog}>Change Password</MenuItem>
+              <MenuItem onClick={handleUserFreeze} onClose={handleCloseDialog}>Freeze Account</MenuItem>
               <MenuItem onClick={handleLogout}>Log Out</MenuItem>
             </Select>
           </FormControl>
@@ -223,7 +236,13 @@ const Navbar = () => {
           </FlexBetween>
         </Box>
       )}
+      <Dialog open={openDialog}>
+        <DialogContent>
+          <UpdatePasswordForm onClose={handleCloseDialog} />
+        </DialogContent>
+      </Dialog>
     </FlexBetween>
+    
   );
 };
 
