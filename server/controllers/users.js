@@ -44,7 +44,6 @@ export const getUserFriends = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const userId = req.user.id;
-    console.log("userId", userId);
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { $set: req.body },
@@ -56,6 +55,8 @@ export const updateUser = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+
 
 export const addRemoveFriend = async (req, res) => {
   try {

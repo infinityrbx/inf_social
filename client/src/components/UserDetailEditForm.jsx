@@ -41,7 +41,7 @@ const UserDetailEditForm = ({ userId, onClose }) => {
   const handleSubmit = async () => {
     try {
       const response = await fetch(`https://inf-social.onrender.com/users`, {
-        method: "PUT",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

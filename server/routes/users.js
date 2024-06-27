@@ -19,12 +19,9 @@ router.get("/:id", verifyToken, getUser);
 router.get("/:id/friends", verifyToken, getUserFriends);
 
 /* UPDATE */
-router.put("/", verifyToken, updateUser);
+router.post("/", verifyToken, updateUser);
 router.patch("/:id/:friendId", verifyToken, addRemoveFriend);
 router.patch("/:id", verifyToken, setFreeze);
 
-/* DELETE */
-
-// router.delete("/:id", verifyToken, deleteUser);
 
 export default router;
